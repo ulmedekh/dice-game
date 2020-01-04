@@ -4,6 +4,7 @@ var activePlayer;
 var score;
 //Тоглогчийн ээлжиндээ цуглуулсан оноог хадгалах хувьсагч
 var roundScore;
+var isGameOver;
 initGame();
 
 function initGame() {
@@ -24,48 +25,59 @@ function initGame() {
   document.getElementById("name-1").textContent = "Player 2";
 
   document.querySelector(".player-0-panel").classList.add("active");
+  isGameOver = false;
 }
 
 document.querySelector(".btn-new").addEventListener("click", initGame);
 //Зөвхөн нэг газар ашиглагдаж байгаа учир Anonymous функц ашиглалаа
 
 document.querySelector(".btn-roll").addEventListener("click", function() {
-  //Шооны аль талаараа буусныг хадгалах хувьсагч, 1-6 гэсэн утгыг санамсаргүйгээр олгоно
-  var dice = Math.floor(Math.random() * 6 + 1);
-  //Харуулахгүй болгосон байгаа шоог харагддаг болгоно
-  document.querySelector(".dice").style.display = "block";
-  //Шооны src -руу хандаж буусан шоогоороо сольж харуулна
-  document.querySelector(".dice").src = "dice-" + dice + ".png";
-  //Хэрэв шоо 1 -ээс бусад нөхцөлөөр буусан бол roundScore -ыг нэмэгдүүлээд current -д оноог нь харуулна.
-  if (dice !== 1) {
-    roundScore += dice;
-    document.getElementById("current-" + activePlayer).textContent = roundScore;
+  if (isGameOver === false) {
+    //Шооны аль талаараа буусныг хадгалах хувьсагч, 1-6 гэсэн утгыг санамсаргүйгээр олгоно
+    var dice = Math.floor(Math.random() * 6 + 1);
+    //Харуулахгүй болгосон байгаа шоог харагддаг болгоно
+    document.querySelector(".dice").style.display = "block";
+    //Шооны src -руу хандаж буусан шоогоороо сольж харуулна
+    document.querySelector(".dice").src = "dice-" + dice + ".png";
+    //Хэрэв шоо 1 -ээс бусад нөхцөлөөр буусан бол roundScore -ыг нэмэгдүүлээд current -д оноог нь харуулна.
+    if (dice !== 1) {
+      roundScore += dice;
+      document.getElementById(
+        "current-" + activePlayer
+      ).textContent = roundScore;
+    } else {
+      switchToNextPlayer();
+    }
   } else {
-    switchToNextPlayer();
+    alert("Тоглоом дууссан байна. Тоглоомыг шинээр эхлүүлнэ үү.");
   }
 });
 
 document.querySelector(".btn-hold").addEventListener("click", function() {
-  score[activePlayer] += roundScore;
-  document.getElementById("score-" + activePlayer).textContent =
-    score[activePlayer];
-  if (score[activePlayer] >= 10) {
-    document.getElementById("name-" + activePlayer).textContent = "WINNER!";
-    document
-      .querySelector(".player-" + activePlayer + "-panel")
-      .classList.add("winner");
-    document
-      .querySelector(".player-" + activePlayer + "-panel")
-      .classList.remove("active");
+  if (isGameOver === false) {
+    score[activePlayer] += roundScore;
+    document.getElementById("score-" + activePlayer).textContent =
+      score[activePlayer];
+    if (score[activePlayer] >= 10) {
+      isGameOver = true;
+      document.getElementById("name-" + activePlayer).textContent = "WINNER!";
+      document
+        .querySelector(".player-" + activePlayer + "-panel")
+        .classList.add("winner");
+      document
+        .querySelector(".player-" + activePlayer + "-panel")
+        .classList.remove("active");
+    } else {
+      switchToNextPlayer();
+    }
   } else {
-    switchToNextPlayer();
+    alert("Тоглоом дууссан байна. Тоглоомыг шинээр эхлүүлнэ үү.");
   }
 });
 
 function switchToNextPlayer() {
   roundScore = 0;
   document.getElementById("current-" + activePlayer).textContent = 0;
-  alert(" 1 буулаа 😭 ");
   //Идэвхитэй тоглогчийн ээлжийг шилжүүлнэ
   if (activePlayer == 0) {
     activePlayer = 1;
